@@ -9,30 +9,33 @@ for i = 1 : length(listing)
     S(i) = load([inputFolder, fileName]);
 end
 
-%% Selecting training data
-numClasses = 3;
+%% Selecting training data with same percentage of segments
+
+i = [];
 i(1) = 2; % jingyi-walk 
 i(2) = 3; % run-jingyu 
-i(3) = 1; % car
+%i(3) = 1; % car
+numClasses = length(i);
 numObsv = 20;
 
-index = zeros(numObsv, numClasses);
 C = []; Y = [];
 for j = 1 : numClasses
-    index(:, j) = ceil(rand(numObsv, 1) * length(S(i(j)).C));
-    C = [C; S(i(j)).C(index(:, j))];
-    Y = [Y; S(i(j)).Y(index(:, j))];
+    l = length(S(i(j)).C);
+    index = randperm(l, numObsv);
+    C = [C; S(i(j)).C(index)];
+    Y = [Y; S(i(j)).Y(index)];
 end
-%%
-for j = 1 : 60
-    plot(cell2mat(C(j))');
-    title(strjoin([num2str(j), ' ', string(Y(j))]));
-    pause;
-end
+
+% %% plot
+% for j = 1 : 40
+%     plot(cell2mat(C(j))');
+%     title(strjoin([num2str(j), ' ', string(Y(j))]));
+%     pause;
+% end
 
 %% Training
 inputSize = 5; 
-outputSize = 60;
+outputSize = 100;
 outputMode = 'last';
 
 layers = [ ...
@@ -54,7 +57,8 @@ options = trainingOptions('sgdm', ...
 net = trainNetwork(C,Y,layers,options);
 
 %% Classifying
-j = 7;
+j = 4;
+miniBatchSize = 5;
 disp(' ');
 XTest = S(j).C;
 YPred = classify(net,XTest, ...
@@ -63,9 +67,10 @@ disp('Prediction:');
 summary(YPred);
 disp('Reality:');
 summary(S(j).Y);
-%%
-for j = 1 : length(XTest)
-    plot(cell2mat(XTest(j))');
-    title(strjoin([num2str(j), ' ', string(YPred(j))]));
-    pause;
-end
+
+% %%
+% for j = 1 : length(XTest)
+%     plot(cell2mat(XTest(j))');
+%     title(strjoin([num2str(j), ' ', string(YPred(j))]));
+%     pause;
+% end
