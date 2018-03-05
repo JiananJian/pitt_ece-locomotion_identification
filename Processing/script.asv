@@ -24,7 +24,7 @@ for j = 1 : numClasses
     Y = [Y; S(i(j)).Y(index(:, j))];
 end
 %%
-for j = 1 : 60
+for j = 41 : 60
     plot(cell2mat(C(j))');
     title(strjoin([num2str(j), ' ', string(Y(j))]));
     pause;
@@ -54,7 +54,7 @@ options = trainingOptions('sgdm', ...
 net = trainNetwork(C,Y,layers,options);
 
 %% Classifying
-j = 7;
+j = 4;
 disp(' ');
 XTest = S(j).C;
 YPred = classify(net,XTest, ...
